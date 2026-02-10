@@ -1,1 +1,1 @@
-from vischeck import *
+from .vischeck import *
