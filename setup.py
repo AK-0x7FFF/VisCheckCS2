@@ -34,7 +34,7 @@ setup(
     ext_modules=ext_modules,
     zip_safe=False,
     python_requires='>=3.7',
-    package_dir={"vischeck": "VisCheckCS2"},
+    package_dir={"vischeck": "vischeck"},
     packages=["vischeck"],
     package_data={'': [
         "*.py",
