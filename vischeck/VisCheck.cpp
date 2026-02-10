@@ -78,6 +78,7 @@ bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const
             float t;
             if (RayIntersectsTriangle(rayOrigin, rayDir, tri, t)) {
                 if (t < maxDistance && t < hitDistance) {
+                    hitDistance = t;
                     return true;
                 }
             }
