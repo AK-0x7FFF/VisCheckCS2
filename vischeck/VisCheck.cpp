@@ -4,7 +4,8 @@
 #include <limits>
 #include <iostream>
 
-const size_t LEAF_THRESHOLD = 4;
+constexpr size_t LEAF_THRESHOLD = 4;
+constexpr float  EPSILON        = 1e-7f;
 
 VisCheck::VisCheck(const std::string& optimizedGeometryFile) {
     if (!geometry.LoadFromFile(optimizedGeometryFile)) {
@@ -56,7 +57,7 @@ std::unique_ptr<BVHNode> VisCheck::BuildBVH(const std::vector<TriangleCombined>&
         return centerA < centerB;
         });
 
-    size_t mid = sortedTris.size() / 2;
+    size_t mid = sortedTris.size() >> 1;
     std::vector<TriangleCombined> leftTris(sortedTris.begin(), sortedTris.begin() + mid);
     std::vector<TriangleCombined> rightTris(sortedTris.begin() + mid, sortedTris.end());
 
@@ -66,7 +67,7 @@ std::unique_ptr<BVHNode> VisCheck::BuildBVH(const std::vector<TriangleCombined>&
     return node;
 }
 
-bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float maxDistance, float& hitDistance) {
+bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float maxDistance, float& hitDistance) noexcept {
     if (!node->bounds.RayIntersects(rayOrigin, rayDir)) {
         return false;
     }
@@ -77,8 +78,7 @@ bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const
             float t;
             if (RayIntersectsTriangle(rayOrigin, rayDir, tri, t)) {
                 if (t < maxDistance && t < hitDistance) {
-                    hitDistance = t;
-                    hit = true;
+                    return true;
                 }
             }
         }
@@ -87,18 +87,19 @@ bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const
         if (node->left) {
             hit |= IntersectBVH(node->left.get(), rayOrigin, rayDir, maxDistance, hitDistance);
         }
-        if (node->right) {
+        if (!hit && node->right) {
             hit |= IntersectBVH(node->right.get(), rayOrigin, rayDir, maxDistance, hitDistance);
         }
     }
     return hit;
 }
 
-bool VisCheck::IsPointVisible(const Vector3& point1, const Vector3& point2)
+bool VisCheck::IsPointVisible(const Vector3& point1, const Vector3& point2) noexcept
 {
     Vector3 rayDir = { point2.x - point1.x, point2.y - point1.y, point2.z - point1.z };
     float distance = std::sqrt(rayDir.dot(rayDir));
-    rayDir = { rayDir.x / distance, rayDir.y / distance, rayDir.z / distance };
+    float invDistance = 1.0f / distance;
+    rayDir = { rayDir.x * invDistance, rayDir.y * invDistance, rayDir.z * invDistance };
     float hitDistance = std::numeric_limits<float>::max();
     for (const auto& bvhRoot : bvhNodes) {
         if (IntersectBVH(bvhRoot.get(), point1, rayDir, distance, hitDistance)) {
@@ -110,10 +111,8 @@ bool VisCheck::IsPointVisible(const Vector3& point1, const Vector3& point2)
     return true;
 }
 
-bool VisCheck::RayIntersectsTriangle(const Vector3& rayOrigin, const Vector3& rayDir, const TriangleCombined& triangle, float& t)
+bool VisCheck::RayIntersectsTriangle(const Vector3& rayOrigin, const Vector3& rayDir, const TriangleCombined& triangle, float& t) noexcept
 {
-    const float EPSILON = 1e-7f;
-
     Vector3 edge1 = triangle.v1 - triangle.v0;
     Vector3 edge2 = triangle.v2 - triangle.v0;
     Vector3 h = rayDir.cross(edge2);

@@ -19,13 +19,13 @@ class VisCheck
 {
 public:
     VisCheck(const std::string& optimizedGeometryFile);
-    bool IsPointVisible(const Vector3& point1, const Vector3& point2);
+    bool IsPointVisible(const Vector3& point1, const Vector3& point2) noexcept;
     bool RayIntersectsTriangle(const Vector3& rayOrigin, const Vector3& rayDir,
-        const TriangleCombined& triangle, float& t);
+        const TriangleCombined& triangle, float& t) noexcept;
 
 private:
     OptimizedGeometry geometry;
     std::vector<std::unique_ptr<BVHNode>> bvhNodes;
     std::unique_ptr<BVHNode> BuildBVH(const std::vector<TriangleCombined>& tris);
-    bool IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float maxDistance, float& hitDistance);
+    bool IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float maxDistance, float& hitDistance) noexcept;
 };

@@ -21,7 +21,12 @@ ext_modules = [
             'VisCheckCS2/'
         ],
         language='c++',
-        extra_compile_args=['/O2', '/MD', '/std:c++17'],
+        extra_compile_args=[
+            '/O3',
+            '/ffast-math',
+            '/MD',
+            '/std:c++17'
+        ],
         extra_link_args=extra_link_args,
     ),
 ]
