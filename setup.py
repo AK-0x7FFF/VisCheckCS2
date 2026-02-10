@@ -9,10 +9,10 @@ ext_modules = [
     Extension(
         'vischeck.vischeck',
         sources=[
-            'VisCheckCS2/vischeck_module.cpp',
-            'VisCheckCS2/OptimizedGeometry.cpp',
-            'VisCheckCS2/Parser.cpp',
-            'VisCheckCS2/VisCheck.cpp',
+            'vischeck/vischeck_module.cpp',
+            'vischeck/OptimizedGeometry.cpp',
+            'vischeck/Parser.cpp',
+            'vischeck/VisCheck.cpp',
             # 'VisCheckCS2/Math.hpp',
         ],  # 源文件
         include_dirs=[
