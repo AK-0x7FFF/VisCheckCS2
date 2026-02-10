@@ -27,5 +27,5 @@ private:
     OptimizedGeometry geometry;
     std::vector<std::unique_ptr<BVHNode>> bvhNodes;
     std::unique_ptr<BVHNode> BuildBVH(const std::vector<TriangleCombined>& tris);
-    bool IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float maxDistance, float& hitDistance) noexcept;
+    bool IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float& maxDistance, float& hitDistance) noexcept;
 };
