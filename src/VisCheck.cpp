@@ -67,7 +67,7 @@ std::unique_ptr<BVHNode> VisCheck::BuildBVH(const std::vector<TriangleCombined>&
     return node;
 }
 
-bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float maxDistance, float& hitDistance) noexcept {
+bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const Vector3& rayDir, float& maxDistance, float& hitDistance) noexcept {
     if (!node->bounds.RayIntersects(rayOrigin, rayDir)) {
         return false;
     }
@@ -78,6 +78,7 @@ bool VisCheck::IntersectBVH(const BVHNode* node, const Vector3& rayOrigin, const
             float t;
             if (RayIntersectsTriangle(rayOrigin, rayDir, tri, t)) {
                 if (t < maxDistance && t < hitDistance) {
+                    hitDistance = t;
                     return true;
                 }
             }
